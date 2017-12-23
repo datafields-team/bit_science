@@ -12,7 +12,14 @@ import pickle
 
 
 def welcome():
-    print 'welcome to the platform - please enjoy your time'
+    print
+    print '****************************************'
+    print '*                                      *'
+    print '*  F.INANCIAL I.MAGERY S.CIENCE T.OOL  *'
+    print '*                                      *'
+    print '****************************************'
+    print
+    print ' welcome to the F.I.S.T. - please enjoy '
     print
 
 def usage(command):
@@ -39,7 +46,7 @@ def imagify_data():
     if data_type == 'stock':
         return imagify_stock_data()
     if data_type == 'crypto':
-        return imagify_stock_data()
+        return imagify_crypto_data()
 
 def imagify_stock_data():
     symbol = raw_input('which symbol can i imagify for you: ')
@@ -54,14 +61,14 @@ def imagify_stock_data():
 
 def imagify_crypto_data():
     symbol = raw_input('which symbol can i imagify for you: ')
+    options = os.listdir('data')
+    options.append('other')
     if symbol == 'Q':
         save()
     elif symbol == 'other':
         filename = raw_input('which file would you like to read: ')
     filename = symbol.upper() + '_scrape.csv'
     while not os.path.exists('data/' + filename):
-        options = os.listdir('data')
-        options.append('other')
         usage(options)
         imagify_stock_data()
     return financial.Finance(filename, symbol.upper())    
@@ -74,7 +81,7 @@ def image_neural_net():
     while symbol != 'DONE':
         while not os.path.exists('input/' + symbol + 'images.pkl') and symbol != 'DONE':
             usage(options)
-            image_neural_net()
+            symbol = ask_question('which symbol would you like to load (BTC): ').upper()
         if symbol == 'DONE':
             pass
         else:
@@ -152,6 +159,9 @@ def image_neural_net():
             steps = ask_question('how many traiing steps: ')
     #use parameter to set number of training vs test images
     perc_split = int((perc_split/100.00) * len(images))
+    #sanity
+    assert not np.any(np.isnan(images))
+    assert not np.any(np.isnan(yvals))
     #split train test
     train_xvals, test_xvals = images[:perc_split], images[perc_split:]
     #if second file, format y labels for that too
@@ -163,16 +173,18 @@ def image_neural_net():
         buckets = np.array([min_val, max_val])
     else:
         buckets = np.linspace(min_val, max_val, num_buckets-1)
+    print(np.max(yvals), np.min(yvals))
     print(buckets)
     #drop each into bucket
     labels = np.digitize(yvals, buckets)
     
-    #print(np.max(labels), np.min(labels))
+    print(np.max(labels), np.min(labels))
     #labels = np.zeros_like(yvals)
     #labels[yvals>0.0] = 1
+    name = str(num_buckets) + ext.split('.')[0]
     train_yvals, test_yvals = labels[:perc_split], labels[perc_split:]
     mdl = fmb.ModelBuilder(train_xvals, train_yvals, test_xvals, test_yvals, len(buckets))
-    classifier = tf.estimator.Estimator(model_fn=mdl.cnn_model_fn, model_dir=str(time.time()) +'tmp_convnet_model')
+    classifier = tf.estimator.Estimator(model_fn=mdl.cnn_model_fn, model_dir=name +'_convnet_model')
     tensors_to_log = {'probabilities' : 'softmax_tensor'}
     logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=500)
     train_input_fn = tf.estimator.inputs.numpy_input_fn(x={'x':train_xvals}, y=train_yvals, batch_size=80, num_epochs=None, shuffle=False)
@@ -180,8 +192,10 @@ def image_neural_net():
     eval_input_fn = tf.estimator.inputs.numpy_input_fn(x={'x':test_xvals}, y=test_yvals, num_epochs=1, shuffle=False)
     eval_results = classifier.evaluate(input_fn=eval_input_fn)
     print(images.shape, yvals.shape)
+    print(np.max(labels), np.min(labels))
     print(buckets)
     print(np.max(labels), np.min(labels))
+    print(np.max(yvals), np.min(yvals))
     return eval_results, mdl
 
 
@@ -250,14 +264,17 @@ if __name__ == '__main__':
             if option == 'imagify':
                 finance_obj = imagify_data()
                 n = ask_question('what size rolling window would you like: ')
+                m = ask_question('what lookahead would you like: ')
                 while(True):
                     try:
                         n = int(n)
+                        m = int(m)
                         break
                     except:
-                        print 'sorry could not convert that to an integer'
+                        print 'sorry could not convert those to an integer'
                         n = ask_question('what size rolling window would you like (default 30): ')
-                finance_obj.process_files(n)
+                        m = ask_question('what lookahead would you like: ')
+                finance_obj.process_files(n,m)
             #*******************************************************
             
             #instructions for neural net option ********************

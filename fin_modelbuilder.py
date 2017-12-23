@@ -84,7 +84,7 @@ class ModelBuilder(object):
         print(dense1.shape)
         dense2 = tf.layers.dense(inputs=dense1, units=400, activation=tf.nn.elu, kernel_initializer=he_init)
         print(dense2.shape)
-        dropout1 = tf.layers.dropout(inputs=dense2, rate=0.75, training=mode == tf.estimator.ModeKeys.TRAIN)
+        dropout1 = tf.layers.dropout(inputs=dense2, rate=0.6, training=mode == tf.estimator.ModeKeys.TRAIN)
         print(dropout1.shape)
         #dense3 = tf.layers.dense(inputs=dense2, units=200, activation=tf.nn.elu, kernel_initializer=he_init)
         #print(dense3.shape)
