@@ -1,18 +1,22 @@
 # bit_science
-simulations, machine learning, modeling for alt coins
+simulations, machine learning, modeling for stocks and crypto coins
+
+USAGE: python menu.py
+
+
+
 
 workflow modules:
 
-data collector
+data scraper - will use coinmarketcap to generate crypto data
+data scraper - todo use googlefinance to scrape ticker symbol data
 
-preprocessor
+preprocessor - will format candlestick charts to numpy arrays
 
-cnn 1
+CNN - build and train a convolutional neural net on image data
 
-cnn 2
+storage - storage of outputs and temp models
 
-cnn 3
+controller - menu board for interactive use
 
-storage
 
-controller
