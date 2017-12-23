@@ -259,10 +259,18 @@ if __name__ == '__main__':
                         n = ask_question('what size rolling window would you like (default 30): ')
                 finance_obj.process_files(n)
             #*******************************************************
+            
+            #instructions for neural net option ********************
             elif option == 'neuralnet':
                 image_neural_net()
+
+            #*******************************************************
+
+            #instructions for scraping option ********************
             elif option == 'scrape':
                 scrape_data()
+            #*******************************************************
+            
             else:
                 usage(valid_options)
             
